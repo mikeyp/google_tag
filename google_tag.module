@@ -11,6 +11,11 @@
  */
 
 /**
+ * Default list of relative paths.
+ */
+define('GOOGLETAGMANAGER_PATHS', "admin*\nbatch*\nnode/add*\nnode/*/*\nuser/*/*");
+
+/**
  * Implements hook_help().
  */
 function google_tag_help($path, $arg) {
