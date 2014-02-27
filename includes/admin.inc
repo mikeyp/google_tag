@@ -27,6 +27,7 @@ function google_tag_settings_form($form, &$form_state) {
   );
   $form['tabs']['general'] = google_tag_general_fieldset($form_state);
   $form['tabs']['paths'] = google_tag_path_fieldset($form_state);
+  $form['tabs']['roles'] = google_tag_role_fieldset($form_state);
 
   return system_settings_form($form);
 }
@@ -98,6 +99,45 @@ function google_tag_path_fieldset(&$form_state) {
     '#description' => $list_description,
     '#default_value' => variable_get('google_tag_path_list', GOOGLETAGMANAGER_PATHS),
     '#rows' => 10,
+  );
+
+  return $fieldset;
+}
+
+/**
+ * Fieldset builder for the module settings form.
+ *
+ * Allows user to specify snippet insertion condition based on user role.
+ */
+function google_tag_role_fieldset(&$form_state) {
+  // Gather data.
+  $roles = array_map('check_plain', user_roles());
+
+  // Build form elements.
+  $fieldset = array(
+    '#type' => 'fieldset',
+    '#title' => t('User roles'),
+    '#description' => t('On this tab, specify the user role condition.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+
+  $fieldset['google_tag_role_toggle'] = array(
+    '#type' => 'radios',
+    '#title' => t('Add snippet for specific roles'),
+    '#options' => array(
+      t('All roles except the selected roles'),
+      t('Only the selected roles'),
+    ),
+    '#default_value' => variable_get('google_tag_role_toggle', 0),
+  );
+
+  $fieldset['google_tag_role_list'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Selected roles'),
+    '#default_value' => variable_get('google_tag_role_list', array()),
+    '#options' => $roles,
   );
 
   return $fieldset;
