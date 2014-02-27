@@ -19,3 +19,15 @@ function _google_tag_help($path, $arg) {
       return t('!link is a free service (registration required) to manage the insertion of tags for capturing website analytics.', array('!link' => $link));
   }
 }
+
+/**
+ * Implements hook_permission().
+ */
+function _google_tag_permission() {
+  return array(
+    'administer google tag manager' => array(
+      'title' => t('Administer Google Tag Manager'),
+      'description' => t('Configure the website integration with Google Tag Manager.'),
+    ),
+  );
+}
