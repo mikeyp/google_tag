@@ -17,3 +17,11 @@ function google_tag_help($path, $arg) {
   module_load_include('inc', 'google_tag', 'includes/info');
   return _google_tag_help($path, $arg);
 }
+
+/**
+ * Implements hook_permission().
+ */
+function google_tag_permission() {
+  module_load_include('inc', 'google_tag', 'includes/info');
+  return _google_tag_permission();
+}
