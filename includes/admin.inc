@@ -182,3 +182,25 @@ function google_tag_status_fieldset(&$form_state) {
 
   return $fieldset;
 }
+
+/**
+ * Form validation handler for google_tag_settings_form().
+ */
+function google_tag_settings_form_validate($form, &$form_state) {
+  $values = &$form_state['values'];
+
+  // Trim the text values.
+  $values['google_tag_container_id'] = trim($values['google_tag_container_id']);
+  $values['google_tag_path_list'] = trim($values['google_tag_path_list']);
+  $values['google_tag_status_list'] = trim($values['google_tag_status_list']);
+
+  // Replace all types of dashes (n-dash, m-dash, minus) with a normal dash.
+  $values['google_tag_container_id'] = str_replace(array('–', '—', '−'), '-', $values['google_tag_container_id']);
+
+  if (!preg_match('/^GTM-\w{4,}$/', $values['google_tag_container_id'])) {
+    // @todo Is there a more specific regular expression that applies?
+    // @todo Is there a way to "test the connection" to determine a valid ID for
+    // a container? It may be valid but not the correct one for the website.
+    form_set_error('google_tag_container_id', t('A valid container ID is case sensitive and formatted like GTM-xxxxxx.'));
+  }
+}
