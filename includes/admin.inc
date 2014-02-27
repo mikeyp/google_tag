@@ -28,6 +28,7 @@ function google_tag_settings_form($form, &$form_state) {
   $form['tabs']['general'] = google_tag_general_fieldset($form_state);
   $form['tabs']['paths'] = google_tag_path_fieldset($form_state);
   $form['tabs']['roles'] = google_tag_role_fieldset($form_state);
+  $form['tabs']['statuses'] = google_tag_status_fieldset($form_state);
 
   return system_settings_form($form);
 }
@@ -138,6 +139,45 @@ function google_tag_role_fieldset(&$form_state) {
     '#title' => t('Selected roles'),
     '#default_value' => variable_get('google_tag_role_list', array()),
     '#options' => $roles,
+  );
+
+  return $fieldset;
+}
+
+/**
+ * Fieldset builder for the module settings form.
+ *
+ * Allows user to specify snippet insertion condition based on response status.
+ */
+function google_tag_status_fieldset(&$form_state) {
+  // Gather data.
+  $text = t('list of HTTP status codes');
+  $link = l($text, 'http://en.wikipedia.org/wiki/List_of_HTTP_status_codes');
+  $list_description = t('Enter one response status per line. For more information, refer to the !link.', array('!link' => $link));
+
+  // Build form elements.
+  $fieldset = array(
+    '#type' => 'fieldset',
+    '#title' => t('Response statuses'),
+    '#description' => t('On this tab, specify the page response status condition. If enabled, this condition overrides the page path condition. In other words, if the HTTP response status is one of the listed statuses, then the page path condition is ignored.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+
+  $fieldset['google_tag_status_toggle'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Override path condition for listed response statuses'),
+    '#description' => t('If checked, then the path condition will be ingored for a listed page response status.'),
+    '#default_value' => variable_get('google_tag_status_toggle', 0),
+  );
+
+  $fieldset['google_tag_status_list'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Listed statuses'),
+    '#description' => $list_description,
+    '#default_value' => variable_get('google_tag_status_list', GOOGLETAGMANAGER_STATUSES),
+    '#rows' => 5,
   );
 
   return $fieldset;
