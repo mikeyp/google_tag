@@ -9,3 +9,11 @@
  *
  * @author Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
+
+/**
+ * Implements hook_help().
+ */
+function google_tag_help($path, $arg) {
+  module_load_include('inc', 'google_tag', 'includes/info');
+  return _google_tag_help($path, $arg);
+}
