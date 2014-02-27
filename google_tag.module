@@ -16,6 +16,11 @@
 define('GOOGLETAGMANAGER_PATHS', "admin*\nbatch*\nnode/add*\nnode/*/*\nuser/*/*");
 
 /**
+ * Default list of HTTP response statuses that override path conditions.
+ */
+define('GOOGLETAGMANAGER_STATUSES', "403 Forbidden\n404 Not Found");
+
+/**
  * Implements hook_help().
  */
 function google_tag_help($path, $arg) {
