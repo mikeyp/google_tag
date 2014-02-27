@@ -24,6 +24,10 @@ function google_tag_settings_form($form, &$form_state) {
     '#type' => 'vertical_tabs',
     '#default_tab' => $default_tab ? $default_tab : 'edit-general',
     '#attributes' => array('class' => array('google-tag')),
+    '#attached' => array(
+      'css' => array(drupal_get_path('module', 'google_tag') . '/css/google_tag.admin.css'),
+      'js' => array(drupal_get_path('module', 'google_tag') . '/js/google_tag.admin.js'),
+    ),
   );
   $form['tabs']['general'] = google_tag_general_fieldset($form_state);
   $form['tabs']['paths'] = google_tag_path_fieldset($form_state);
