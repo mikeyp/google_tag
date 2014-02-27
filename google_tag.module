@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * @file
+ * Provides primary Drupal hook implementations.
+ *
+ * Adds a JavaScript snippet to selected page responses to trigger analytics and
+ * other tracking items configured using the Google Tag Manager.
+ *
+ * @author Jim Berry ("solotandem", http://drupal.org/user/240748)
+ */
