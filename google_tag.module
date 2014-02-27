@@ -113,7 +113,7 @@ function _google_tag_status_check() {
     $statuses = variable_get('google_tag_status_list', GOOGLETAGMANAGER_STATUSES);
 
     if (!$toggle) {
-      $satisfied = !$toggle;
+      $satisfied = $toggle;
     }
     else {
       // Get the HTTP response status.
