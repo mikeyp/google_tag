@@ -19,6 +19,14 @@ function google_tag_help($path, $arg) {
 }
 
 /**
+ * Implements hook_menu().
+ */
+function google_tag_menu() {
+  module_load_include('inc', 'google_tag', 'includes/info');
+  return _google_tag_menu();
+}
+
+/**
  * Implements hook_permission().
  */
 function google_tag_permission() {
