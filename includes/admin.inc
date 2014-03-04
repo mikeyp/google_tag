@@ -53,14 +53,14 @@ function google_tag_general_fieldset(&$form_state) {
   );
 
   $fieldset['google_tag_container_id'] = array(
-    '#title' => t('Container ID'),
     '#type' => 'textfield',
+    '#title' => t('Container ID'),
+    '#description' => t('The ID assigned by Google Tag Manager (GTM) for this website container. To get a container ID, !link and create a container for your website.', array('!link' => $link)),
     '#default_value' => variable_get('google_tag_container_id', ''),
     '#attributes' => array('placeholder' => array('GTM-xxxxxx')),
     '#size' => 10,
     '#maxlength' => 15,
     '#required' => TRUE,
-    '#description' => t('The ID assigned by Google Tag Manager (GTM) for this website container. To get a container ID, !link and create a container for your website.', array('!link' => $link)),
   );
 
   return $fieldset;
