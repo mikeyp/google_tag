@@ -18,15 +18,16 @@
 function google_tag_page_process(&$children, $elements) {
   // Gather data.
   $container_id = variable_get('google_tag_container_id', '');
+  // @todo Add this variable to settings form.
   $compact = variable_get('google_tag_compact_tag', TRUE);
 
   // Build script tags.
   $noscript = <<<EOS
 <noscript><iframe src="//www.googletagmanager.com/ns.html?id=$container_id"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 EOS;
   $script = <<<EOS
-<script>
+<script type="text/javascript">
 (function(w,d,s,l,i){
 
   w[l]=w[l]||[];
@@ -44,7 +45,7 @@ EOS;
 EOS;
   if ($compact) {
     $noscript = str_replace("\n", '', $noscript);
-    $script = str_replace(array("\n", ' '), '', $script);
+    $script = str_replace(array("\n", '  '), '', $script);
   }
   $script = <<<EOS
 
