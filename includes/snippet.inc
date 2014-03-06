@@ -19,8 +19,7 @@ function google_tag_page_process(&$children, $elements) {
   // Gather data.
   $container_id = variable_get('google_tag_container_id', '');
   $container_id = trim(drupal_json_encode($container_id), '"');
-  // @todo Add this variable to settings form.
-  $compact = variable_get('google_tag_compact_tag', TRUE);
+  $compact = variable_get('google_tag_compact_tag', 1);
 
   // Build script tags.
   $noscript = <<<EOS

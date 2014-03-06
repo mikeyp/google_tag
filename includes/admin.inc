@@ -33,6 +33,7 @@ function google_tag_settings_form($form, &$form_state) {
   $form['tabs']['paths'] = google_tag_path_fieldset($form_state);
   $form['tabs']['roles'] = google_tag_role_fieldset($form_state);
   $form['tabs']['statuses'] = google_tag_status_fieldset($form_state);
+  $form['tabs']['advanced'] = google_tag_advanced_fieldset($form_state);
 
   return system_settings_form($form);
 }
@@ -182,6 +183,29 @@ function google_tag_status_fieldset(&$form_state) {
     '#description' => $list_description,
     '#default_value' => variable_get('google_tag_status_list', GOOGLETAGMANAGER_STATUSES),
     '#rows' => 5,
+  );
+
+  return $fieldset;
+}
+
+/**
+ * Fieldset builder for the module settings form.
+ */
+function google_tag_advanced_fieldset(&$form_state) {
+  // Build form elements.
+  $fieldset = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+
+  $fieldset['google_tag_compact_tag'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Compact the JavaScript snippet'),
+    '#description' => t('If checked, then the JavaScript snippet will be compacted to remove unnecessary whitespace. This is <strong>recommended on production sites</strong>. Leave unchecked to output a snippet that can be examined using a JavaScript debugger in the browser.'),
+    '#default_value' => variable_get('google_tag_compact_tag', 1),
   );
 
   return $fieldset;
