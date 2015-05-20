@@ -1,0 +1,5 @@
+services:
+  google_tag.response_subscriver:
+    class: Drupal\google_tag\EventSubscriber\GoogleTagResponseSubscriber
+    tags:
+      - { name: event_subscriber }
