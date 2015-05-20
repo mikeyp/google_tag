@@ -10,6 +10,8 @@
  * @author Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
+use Drupal\Core\Routing\RouteMatchInterface;
+
 /**
  * Default list of relative paths.
  */
@@ -23,25 +25,12 @@ define('GOOGLETAGMANAGER_STATUSES', "403 Forbidden\n404 Not Found");
 /**
  * Implements hook_help().
  */
-function google_tag_help($path, $arg) {
-  module_load_include('inc', 'google_tag', 'includes/info');
-  return _google_tag_help($path, $arg);
-}
-
-/**
- * Implements hook_menu().
- */
-function google_tag_menu() {
-  module_load_include('inc', 'google_tag', 'includes/info');
-  return _google_tag_menu();
-}
-
-/**
- * Implements hook_permission().
- */
-function google_tag_permission() {
-  module_load_include('inc', 'google_tag', 'includes/info');
-  return _google_tag_permission();
+function google_tag_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.google_tag':
+    case 'google_tag.settings_form':
+      return t('<a href="!url">Google Tag Manager</a> is a free service (registration required) to manage the insertion of tags for capturing website analytics.', array('!url' => 'http://www.google.com/tagmanager/'));
+  }
 }
 
 /**
