@@ -17,9 +17,9 @@
       var $context = $(context);
 
       $context.find('#edit-paths').drupalSetSummary(function (context) {
-        var $radio = $context.find('input[name="google_tag_path_toggle"]:checked');
-        if ($radio.val() == 0) {
-          if (!$context.find('textarea[name="google_tag_path_list"]').val()) {
+        var $radio = $context.find('input[name="path_toggle"]:checked');
+        if ($radio.val() == 'all_except_listed') {
+          if (!$context.find('textarea[name="path_list"]').val()) {
             return Drupal.t('All paths');
           }
           else {
@@ -27,7 +27,7 @@
           }
         }
         else {
-          if (!$context.find('textarea[name="google_tag_path_list"]').val()) {
+          if (!$context.find('textarea[name="path_list"]').val()) {
             return Drupal.t('No paths');
           }
           else {
@@ -41,8 +41,8 @@
         $('input[type="checkbox"]:checked', context).each(function () {
           vals.push($.trim($(this).next('label').text()));
         });
-        var $radio = $('input[name="google_tag_role_toggle"]:checked', context);
-        if ($radio.val() == 0) {
+        var $radio = $('input[name="role_toggle"]:checked', context);
+        if ($radio.val() == 'all_except_listed') {
           if (!vals.length) {
             return Drupal.t('All roles');
           }
@@ -61,9 +61,9 @@
       });
 
       $context.find('#edit-statuses').drupalSetSummary(function (context) {
-        var $checkbox = $context.find('input[name="google_tag_status_toggle"]:checked');
+        var $checkbox = $context.find('input[name="status_toggle"]:checked');
         if ($checkbox.is(':checked')) {
-          if (!$context.find('textarea[name="google_tag_status_list"]').val()) {
+          if (!$context.find('textarea[name="status_list"]').val()) {
             return Drupal.t('No statuses');
           }
           else {

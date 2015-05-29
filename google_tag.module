@@ -13,14 +13,14 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
- * Default list of relative paths.
+ * Default for matching all items, except listed.
  */
-define('GOOGLETAGMANAGER_PATHS', "admin*\nbatch*\nnode/add*\nnode/*/*\nuser/*/*");
+const GOOGLE_TAG_DEFAULT_INCLUDE = 'all_except_listed';
 
 /**
- * Default list of HTTP response statuses that override path conditions.
+ * Default for only matching listed items.
  */
-define('GOOGLETAGMANAGER_STATUSES', "403 Forbidden\n404 Not Found");
+const GOOGLE_TAG_DEFAULT_EXCLUDE = 'only_listed';
 
 /**
  * Implements hook_help().
