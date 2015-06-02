@@ -12,6 +12,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,16 +54,32 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
   protected $currentPath;
 
   /**
-   * Constructs and event subscriber to log request terminations.
+   * The current user.
    *
-   * @param \Drupal\console_logger\RequestLogger $requestLogger
-   *   The request logger service.
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
-  public function __construct(ConfigFactoryInterface $configFactory, AliasManagerInterface $alias_manager, PathMatcherInterface $path_matcher, CurrentPathStack $current_path) {
+  protected $currentUser;
+
+  /**
+   * Constructs a new Google Tag response subscriber.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory service.
+   * @param \Drupal\Core\Path\AliasManagerInterface $alias_manager
+   *   The alias manager service.
+   * @param \Drupal\Core\Path\PathMatcherInterface $path_matcher
+   *   The path matcher service.
+   * @param \Drupal\Core\Path\CurrentPathStack $current_path
+   *   The current path.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user.
+   */
+  public function __construct(ConfigFactoryInterface $configFactory, AliasManagerInterface $alias_manager, PathMatcherInterface $path_matcher, CurrentPathStack $current_path, AccountProxyInterface $current_user) {
     $this->config = $configFactory->get('google_tag.settings');
     $this->aliasManager = $alias_manager;
     $this->pathMatcher = $path_matcher;
     $this->currentPath = $current_path;
+    $this->currentUser = $current_user;
   }
 
 
@@ -77,24 +94,22 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
     $request = $event->getRequest();
     $response = $event->getResponse();
 
-    if (!$this->tagApplies($request, $response)) {
-      return;
+    if ($this->tagApplies($request, $response)) {
+      $container_id = $this->config->get('container_id');
+      $container_id = trim(json_encode($container_id), '"');
+      $compact = $this->config->get('compact_tag');
+
+      // Insert snippet after the opening body tag.
+      $response_text = preg_replace('@<body[^>]*>@', '$0' . $this->getTag($container_id, $compact), $response->getContent(), 1);
+      $response->setContent($response_text);
     }
-
-    $container_id = $this->config->get('container_id');
-    $container_id = trim(json_encode($container_id), '"');
-    $compact = $this->config->get('compact_tag');
-
-    // Insert snippet after the opening body tag.
-    $response_text = preg_replace('@<body[^>]*>@', '$0' . $this->getTag($container_id, $compact), $response->getContent(), 1);
-    $response->setContent($response_text);
   }
 
   /**
    * Return the text for the tag.
    *
    * @param string $container_id
-   *   The Google Tag manater container ID.
+   *   The Google Tag Manager container ID.
    * @param bool $compact
    *   Whether or not the tag should be compacted (whitespace removed).
    *
@@ -143,7 +158,15 @@ EOS;
   }
 
   /**
+   * Determines whether or not the tag should be included on a request.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request, used for path matching.
+   * @param \Symfony\Component\HttpFoundation\Response $response
+   *   The response, used for matching status codes.
+   *
+   * @return bool
+   *   Whether or not the tag should be included on the page.
    */
   private function tagApplies(Request $request, Response $response) {
     $id = $this->config->get('container_id');
@@ -153,14 +176,18 @@ EOS;
       return FALSE;
     }
 
-
     if (!$this->statusCheck($response) && !$this->pathCheck($request)) {
       // Omit snippet based on the response status and path conditions.
       return FALSE;
     }
 
-    return TRUE;
+    if (!$this->roleCheck()) {
+      // Omit snippet based on the response status and path conditions.
+      return FALSE;
+    }
 
+
+    return TRUE;
   }
 
   /**
@@ -194,7 +221,15 @@ EOS;
   }
 
   /**
+   * Determines whether or not the tag should be included on a page based on
+   * the path settings.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request object.
+   *
+   * @return bool
+   *   True if the tag should be included for the current request based on path
+   *   settings.
    */
   private function pathCheck(Request $request) {
     static $satisfied;
@@ -215,6 +250,33 @@ EOS;
       }
     }
 
+    return $satisfied;
+  }
+
+  /**
+   * Determines whether or not the tag should be included on a page based on
+   * user roles.
+   *
+   * @return bool
+   *   True is the check is enabled and the user roles match the settings.
+   */
+  private function roleCheck() {
+    static $satisfied;
+
+    if (!isset($satisfied)) {
+      $toggle = $this->config->get('role_toggle');
+      $roles = $this->config->get('role_list');
+
+      if (empty($roles)) {
+        return ($toggle == GOOGLE_TAG_DEFAULT_INCLUDE) ? TRUE : FALSE;
+      }
+      else {
+        $satisfied = FALSE;
+        // Check user roles against listed roles.
+        $satisfied = (bool) array_intersect($roles, $this->currentUser->getRoles());
+        $satisfied = ($toggle == GOOGLE_TAG_DEFAULT_INCLUDE) ? !$satisfied : $satisfied;
+      }
+    }
     return $satisfied;
   }
 
