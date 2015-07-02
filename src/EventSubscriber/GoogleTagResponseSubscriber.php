@@ -243,7 +243,7 @@ EOS;
       }
       else {
         // Compare the lowercase path alias (if any) and internal path.
-        $path = trim($this->currentPath->getPath($request), '/');
+        $path = rtrim($this->currentPath->getPath($request), '/');
         $path_alias = Unicode::strtolower($this->aliasManager->getAliasByPath($path));
         $satisfied = $this->pathMatcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $this->pathMatcher->matchPath($path, $pages));
         $satisfied = ($toggle == GOOGLE_TAG_DEFAULT_INCLUDE) ? !$satisfied : $satisfied;
