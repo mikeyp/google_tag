@@ -29,6 +29,6 @@ function google_tag_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.google_tag':
     case 'google_tag.settings_form':
-      return t('<a href="!url">Google Tag Manager</a> is a free service (registration required) to manage the insertion of tags for capturing website analytics.', array('!url' => 'http://www.google.com/tagmanager/'));
+      return t('<a href=":url">Google Tag Manager</a> is a free service (registration required) to manage the insertion of tags for capturing website analytics.', array(':url' => 'http://www.google.com/tagmanager/'));
   }
 }

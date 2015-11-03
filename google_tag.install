@@ -7,8 +7,6 @@
  * @author Jim Berry ("solotandem", http://drupal.org/user/240748)
  */
 
-use Drupal\Component\Utility\SafeMarkup;
-
 /**
  * Implements hook_requirements().
  */
@@ -20,7 +18,7 @@ function google_tag_requirements($phase) {
       // Google Tag Manager container ID has not been set.
       $requirements['google_tag'] = [
         'title' => t('Google Tag Manager'),
-        'description' => SafeMarkup::set(t('Configure this integration module on its <a href="!url">settings page</a>.', ['!url' => \Drupal::url('google_tag.settings_form')])),
+        'description' => t('Configure this integration module on its <a href=":url">settings page</a>.', [':url' => \Drupal::url('google_tag.settings_form')]),
         'severity' => REQUIREMENT_WARNING,
         'value' => t('Not configured'),
       ];
