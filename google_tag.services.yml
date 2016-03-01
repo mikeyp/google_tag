@@ -1,5 +1,5 @@
 services:
-  google_tag.response_subscriver:
+  google_tag.response_subscriber:
     class: Drupal\google_tag\EventSubscriber\GoogleTagResponseSubscriber
     arguments: ['@config.factory', '@path.alias_manager', '@path.matcher', '@path.current', '@current_user']
     tags:
