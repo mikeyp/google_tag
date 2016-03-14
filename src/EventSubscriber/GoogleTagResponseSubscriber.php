@@ -20,7 +20,8 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class GoogleTagResponseSubscriber
+ * Class GoogleTagResponseSubscriber.
+ *
  * @package Drupal\google_tag\EventSubscriber
  */
 class GoogleTagResponseSubscriber implements EventSubscriberInterface {
@@ -63,7 +64,7 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
   /**
    * Constructs a new Google Tag response subscriber.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
    * @param \Drupal\Core\Path\AliasManagerInterface $alias_manager
    *   The alias manager service.
@@ -74,8 +75,8 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, AliasManagerInterface $alias_manager, PathMatcherInterface $path_matcher, CurrentPathStack $current_path, AccountProxyInterface $current_user) {
-    $this->config = $configFactory->get('google_tag.settings');
+  public function __construct(ConfigFactoryInterface $config_factory, AliasManagerInterface $alias_manager, PathMatcherInterface $path_matcher, CurrentPathStack $current_path, AccountProxyInterface $current_user) {
+    $this->config = $config_factory->get('google_tag.settings');
     $this->aliasManager = $alias_manager;
     $this->pathMatcher = $path_matcher;
     $this->currentPath = $current_path;
@@ -84,7 +85,10 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
 
 
   /**
+   * Adds a tag.
+   *
    * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $event
+   *   The event.
    */
   public function addTag(FilterResponseEvent $event) {
     if (!$event->isMasterRequest()) {
@@ -140,7 +144,6 @@ EOS;
 </script>
 EOS;
 
-
     if ($compact) {
       $noscript = str_replace("\n", '', $noscript);
       $script = str_replace(array("\n", '  '), '', $script);
@@ -186,13 +189,13 @@ EOS;
       return FALSE;
     }
 
-
     return TRUE;
   }
 
   /**
-   * HTTP status code check. This checks to see if status check is even used
-   * before checking the status.
+   * HTTP status code check.
+   *
+   * This checks to see if status check is even used before checking the status.
    *
    * @param \Symfony\Component\HttpFoundation\Response $response
    *   The response object.
@@ -221,8 +224,9 @@ EOS;
   }
 
   /**
-   * Determines whether or not the tag should be included on a page based on
-   * the path settings.
+   * Determines whether or not the tag should be included on a page.
+   *
+   * Based on the path settings.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
@@ -254,8 +258,9 @@ EOS;
   }
 
   /**
-   * Determines whether or not the tag should be included on a page based on
-   * user roles.
+   * Determines whether or not the tag should be included on a page.
+   *
+   * Based on user roles.
    *
    * @return bool
    *   True is the check is enabled and the user roles match the settings.
@@ -281,10 +286,11 @@ EOS;
   }
 
   /**
-   * {@inheritdoc}
+   * Inheritdoc doesn't work.
    */
   public static function getSubscribedEvents() {
     $events[KernelEvents::RESPONSE][] = array('addTag', -500);
     return $events;
   }
+
 }
