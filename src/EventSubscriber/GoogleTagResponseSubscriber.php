@@ -141,13 +141,12 @@ EOS;
 </script>
 EOS;
 
-
     if ($compact) {
-      $noscript = str_replace("\n", '', $noscript);
-      $script = str_replace(array("\n", '  '), '', $script);
+      $noscript = $this->compressHtml($noscript);
+      $script = $this->compressHtml($script);
     }
-    $script = <<<EOS
 
+    $script = <<<EOS
 <!-- Google Tag Manager -->
 $noscript
 $script
@@ -156,6 +155,16 @@ EOS;
 
     return $script;
 
+  }
+
+  /**
+   * Return the HTML compressed.
+   *
+   * @param $data
+   * @return mixed
+   */
+  private function compressHtml($data) {
+    return str_replace(["\n", '  '], '', $data);
   }
 
   /**
