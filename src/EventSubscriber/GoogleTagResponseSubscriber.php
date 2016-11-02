@@ -101,8 +101,15 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
       $compact = $this->config->get('compact_tag');
 
       // Insert snippet after the opening body tag.
-      $response_text = preg_replace('@</head>@', $this->getHeadTag($container_id, $compact) . '$0', $response->getContent(), 1);
-      $response_text = preg_replace('@<body[^>]*>@', '$0' . $this->getTag($container_id, $compact), $response_text, 1);
+      $pattern = [
+        '@</head>@',
+        '@<body[^>]*>@'
+      ];
+      $replace = [
+        $this->getHeadTag($container_id, $compact) . '$0',
+        '$0' . $this->getTag($container_id, $compact)
+      ];
+      $response_text = preg_replace($pattern, $replace, $response->getContent(), 1);
       $response->setContent($response_text);
     }
   }
@@ -138,18 +145,7 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
 </script>
 EOS;
 
-    if ($compact) {
-      $script = $this->compressHtml($script);
-    }
-
-    $script = <<<EOS
-<!-- Google Tag Manager -->
-$script
-<!-- End Google Tag Manager -->
-EOS;
-
-    return $script;
-
+      return $this->prepareTag($script, $compact);
   }
 
     /**
@@ -170,28 +166,42 @@ EOS;
  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 EOS;
 
-        if ($compact) {
-            $noscript = $this->compressHtml($noscript);
-        }
+        return $this->prepareTag($noscript, $compact);
+    }
 
-        $script = <<<EOS
-<!-- Google Tag Manager -->
-$noscript
-<!-- End Google Tag Manager -->
-EOS;
+    /**
+     * @param string $script
+     * @param bool $compact
+     * @return string
+     */
+    private function prepareTag($script, $compact) {
+      $script = ($compact) ? $this->compressHtml($script) : $script;
 
-        return $script;
-
+      return $this->addComments($script);
     }
 
   /**
    * Return the HTML compressed.
    *
-   * @param $data
+   * @param string $data
    * @return mixed
    */
   private function compressHtml($data) {
     return str_replace(["\n", '  '], '', $data);
+  }
+
+  /**
+   * Return the comments around the script.
+   *
+   * @param string $script
+   * @return string
+   */
+  private function addComments($script) {
+    return <<<EOS
+<!-- Google Tag Manager -->
+$script
+<!-- End Google Tag Manager -->
+EOS;
   }
 
   /**
