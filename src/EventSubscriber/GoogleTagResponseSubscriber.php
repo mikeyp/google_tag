@@ -96,14 +96,27 @@ class GoogleTagResponseSubscriber implements EventSubscriberInterface {
     $response = $event->getResponse();
 
     if ($this->tagApplies($request, $response)) {
-      $container_id = $this->config->get('container_id');
-      $container_id = trim(json_encode($container_id), '"');
-      $compact = $this->config->get('compact_tag');
+      $container_id = $this->getContainerId();
+      $compact = $this->getCompact();
 
       // Insert snippet after the opening body tag.
       $response_text = preg_replace('@<body[^>]*>@', '$0' . $this->getTag($container_id, $compact), $response->getContent(), 1);
       $response->setContent($response_text);
     }
+  }
+
+  /**
+   * Fetch the container id, here to make it easier to overload.
+   *
+   * @return string
+   */
+  public function getContainerId() {
+    $container_id = $this->config->get('container_id');
+    return trim(json_encode($container_id), '"');
+  }
+
+  public function getCompact() {
+    return $this->config->get('compact_tag');
   }
 
   /**
@@ -169,7 +182,7 @@ EOS;
    * @return bool
    *   Whether or not the tag should be included on the page.
    */
-  private function tagApplies(Request $request, Response $response) {
+  protected function tagApplies(Request $request, Response $response) {
     $id = $this->config->get('container_id');
 
     if (empty($id)) {
@@ -206,7 +219,7 @@ EOS;
    *   True if the check is enabled and the status code matches the list of
    *   enabled statuses.
    */
-  private function statusCheck(Response $response) {
+  protected function statusCheck(Response $response) {
     static $satisfied;
 
     if (!isset($satisfied)) {
@@ -236,7 +249,7 @@ EOS;
    *   True if the tag should be included for the current request based on path
    *   settings.
    */
-  private function pathCheck(Request $request) {
+  protected function pathCheck(Request $request) {
     static $satisfied;
 
     if (!isset($satisfied)) {
@@ -265,7 +278,7 @@ EOS;
    * @return bool
    *   True is the check is enabled and the user roles match the settings.
    */
-  private function roleCheck() {
+  protected function roleCheck() {
     static $satisfied;
 
     if (!isset($satisfied)) {
